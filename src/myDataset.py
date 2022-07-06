@@ -140,7 +140,8 @@ class myDataset(DGLDataset):
         self.graphs = []
         self.len = 0
         vfile_pairs = {}
-            """
+
+        """
         for i,path in enumerate(self.data_paths):
             files = os.listdir(path)
             for v in files:
@@ -167,7 +168,7 @@ class myDataset(DGLDataset):
                 self.len += 1
                 """
         # parse single file
-        graph = my_parse_single_file(data_paths)
+        graph = my_parse_single_file(self.data_paths)
 
         self.graphs.append(graph)
 
