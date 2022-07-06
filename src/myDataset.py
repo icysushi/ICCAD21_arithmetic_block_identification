@@ -10,10 +10,11 @@ import torch as th
 import os
 import random
 from verilog_parser import DcParser
+from myParse import myParse
 from options import get_options
 
 
-def parse_single_file(parser,vfile_pair,hier_report):
+def my_parse_single_file(fname):
     r"""
 
     generate the DAG for a circuit design
@@ -29,8 +30,9 @@ def parse_single_file(parser,vfile_pair,hier_report):
     """
 
     # gate types
-
-    nodes, edges,block_inputs,block_outputs = parser.parse(vfile_pair,hier_report)
+    
+    # erased ,block_inputs,block_outputs
+    nodes, edges = myParse(fname)
     print('#node: {}, #edges:{}'.format(len(nodes),len(edges)))
     
     ctype2id = {
@@ -66,6 +68,7 @@ def parse_single_file(parser,vfile_pair,hier_report):
 
 
     # collect the label information
+    """
     print('\tlabel the nodes')
     count1 = 0
     count2 = 0
@@ -80,7 +83,7 @@ def parse_single_file(parser,vfile_pair,hier_report):
     print('count',count1)
     print('count2',count2)
 
-    print('\tgenerate type-relative initial features')
+    print('\tgenerate type-relative initial features')"""
     # collect the node type information
     ntype = th.zeros((len(node2id), len(ctype2id)), dtype=th.float)
     for n in nodes:
@@ -104,11 +107,12 @@ def parse_single_file(parser,vfile_pair,hier_report):
     graph.ndata["ntype"] = ntype
 
     # add label information
+    """
     graph.ndata['label_i'] = is_input
     graph.ndata['label_o'] = is_output
 
     labels = graph.ndata['label_o']
-    print(len(labels),len(labels[labels.squeeze(-1)==1]),len(labels[labels.squeeze(-1)==0]))
+    print(len(labels),len(labels[labels.squeeze(-1)==1]),len(labels[labels.squeeze(-1)==0]))"""
     graph.edata["r"] = th.FloatTensor(is_reverted)
 
     print('--- Transforming is done!')
@@ -116,12 +120,12 @@ def parse_single_file(parser,vfile_pair,hier_report):
     return graph
 
 
-class Dataset(DGLDataset):
-    def __init__(self, top_module,data_paths,report_folders,target_block,keywords):
+class myDataset(DGLDataset):
+    def __init__(self, data_paths):
         self.data_paths = data_paths
-        self.report_folders = report_folders
-        self.parser = DcParser(top_module,target_block,keywords,report_folders[0])
-        super(Dataset, self).__init__(name="dac")
+        #self.report_folders = report_folders
+        #self.parser = DcParser(top_module,target_block,keywords,report_folders[0])
+        super(myDataset, self).__init__(name="dac")
 
     def process(self):
         r"""
@@ -136,6 +140,7 @@ class Dataset(DGLDataset):
         self.graphs = []
         self.len = 0
         vfile_pairs = {}
+            """
         for i,path in enumerate(self.data_paths):
             files = os.listdir(path)
             for v in files:
@@ -160,10 +165,11 @@ class Dataset(DGLDataset):
 
                 print("Processing file {}".format(vfile_pair[1]))
                 self.len += 1
-                # parse single file
-                graph = parse_single_file(self.parser, (hier_vf,vf), hier_report)
+                """
+        # parse single file
+        graph = my_parse_single_file(data_paths)
 
-                self.graphs.append(graph)
+        self.graphs.append(graph)
 
         # combine all the graphs into a batch graph
         self.batch_graph = dgl.batch(self.graphs)

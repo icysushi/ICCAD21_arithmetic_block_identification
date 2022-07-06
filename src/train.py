@@ -3,6 +3,7 @@ this script is used to train/fine-tune and validate/test the models
 """
 from parse_cell_lib import CellInfo
 from dataset import *
+from myDataset import *
 from options import get_options
 from model import *
 import dgl
@@ -172,6 +173,7 @@ def preprocess(data_path,device,options):
         no return
     """
     print('----------------Preprocessing----------------')
+    """
     if os.path.exists(data_path) is False:
         os.makedirs(data_path)
     train_data_file = os.path.join(data_path, 'train.pkl')
@@ -179,7 +181,7 @@ def preprocess(data_path,device,options):
         test_save_file = 'test.pkl'
     else:
         test_save_file = 'test_{}.pkl'.format(options.test_id)
-    val_data_file = os.path.join(data_path, test_save_file)
+    val_data_file = os.path.join(data_path, test_save_file)"""
     # if os.path.exists(os.path.join(data_path,'ctype2id.pkl')):
     #     with open(os.path.join(data_path, 'ctype2id.pkl'), 'rb') as f:
     #         ctype2id = pickle.load(f)
@@ -196,14 +198,21 @@ def preprocess(data_path,device,options):
         keywords = [options.keywords]
     else:
         keywords = options.keywords
+
+    dataset = myDataset(data_path)
+    g = dataset.batch_graph
+    with open('./test.pkl', 'wb') as f:
+        pickle.dump(g, f)
+        """
     # generate and save the test dataset if missing
     if os.path.exists(val_data_file) is False:
         print('Validation dataset does not exist. Generating validation dataset... ')
         datapaths = [os.path.join(options.val_netlist_path,'implementation')]
         report_folders = [os.path.join(options.val_netlist_path,'report')]
         th.multiprocessing.set_sharing_strategy('file_system')
-        dataset = Dataset(options.val_top,datapaths,report_folders,
-                          options.target_block,keywords)
+        dataset = myDataset(datapaths)
+        #dataset = Dataset(options.val_top,datapaths,report_folders,
+        #                  options.target_block,keywords)
 
         # ctype2id = dataset.ctype2id
         # ntypes = len(ctype2id)
@@ -231,7 +240,7 @@ def preprocess(data_path,device,options):
         #     pickle.dump(ctype2id, f)
         g = dataset.batch_graph
         with open(train_data_file, 'wb') as f:
-            pickle.dump(g, f)
+            pickle.dump(g, f)"""
     # print('Training dataset is ready!')
     # print(ctype2id)
     # initialize the bidirectional model

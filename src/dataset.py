@@ -29,9 +29,8 @@ def parse_single_file(parser,vfile_pair,hier_report):
     """
 
     # gate types
-    
-    # erased ,block_inputs,block_outputs
-    nodes, edges = parser.parse(vfile_pair,hier_report)
+
+    nodes, edges,block_inputs,block_outputs = parser.parse(vfile_pair,hier_report)
     print('#node: {}, #edges:{}'.format(len(nodes),len(edges)))
     
     ctype2id = {
@@ -67,7 +66,6 @@ def parse_single_file(parser,vfile_pair,hier_report):
 
 
     # collect the label information
-    """
     print('\tlabel the nodes')
     count1 = 0
     count2 = 0
@@ -82,7 +80,7 @@ def parse_single_file(parser,vfile_pair,hier_report):
     print('count',count1)
     print('count2',count2)
 
-    print('\tgenerate type-relative initial features')"""
+    print('\tgenerate type-relative initial features')
     # collect the node type information
     ntype = th.zeros((len(node2id), len(ctype2id)), dtype=th.float)
     for n in nodes:
@@ -106,12 +104,11 @@ def parse_single_file(parser,vfile_pair,hier_report):
     graph.ndata["ntype"] = ntype
 
     # add label information
-    """
     graph.ndata['label_i'] = is_input
     graph.ndata['label_o'] = is_output
 
     labels = graph.ndata['label_o']
-    print(len(labels),len(labels[labels.squeeze(-1)==1]),len(labels[labels.squeeze(-1)==0]))"""
+    print(len(labels),len(labels[labels.squeeze(-1)==1]),len(labels[labels.squeeze(-1)==0]))
     graph.edata["r"] = th.FloatTensor(is_reverted)
 
     print('--- Transforming is done!')
