@@ -3,7 +3,10 @@
 
 [论文链接](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9643581&casa_token=a1E7fmIbxtMAAAAA:Fln4hDURRPuHosM8tOYM7_SzGbzepm7IneoCh3k9dN3k0cDNgl7KABe9RmSRhY-UJ2YzuEhuYw&tag=1)
 
-## 环境配置
+## 环境配置 
+pip install torch==1.7.0+cu110 torchaudio==0.7.0 torchvision==0.8.1+cu110 -f https://download.pytorch.org/whl/torch_stable.html  
+pip install torch-spline-conv==1.2.1+cu110  
+
 运行环境：Linux
 
 Python环境创建：在根目录下执行如下命令：

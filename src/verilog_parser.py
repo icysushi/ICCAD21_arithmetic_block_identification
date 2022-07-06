@@ -14,7 +14,7 @@ import re
 import networkx as nx
 
 import cProfile
-
+"""
 assert os.path.exists('../data/comb_cell_lib.pkl'), 'comb cell lib pickle does not exists in {}, Run parse_cell_lib.py first!' \
     .format('../data/comb_cell_lib.pkl')
 with open('../data/comb_cell_lib.pkl', 'rb') as f:
@@ -24,7 +24,7 @@ assert os.path.exists('../data/seq_cell_lib.pkl'), 'seq cell lib pickle does not
     .format('../data/seq_cell_lib.pkl')
 with open('../data/seq_cell_lib.pkl', 'rb') as f:
     seq_cell_info_map = pickle.load(f)
-
+"""
 def parse_arg(arg,port_info,ios,wires):
     r"""
 
@@ -506,7 +506,7 @@ class DcParser:
                 sub_nodes,sub_inputs = cell_info.outputs[fo_portname]
                 if len(sub_nodes)==0:
                     buff_replace[port2argname[fo_portname]] = port2argname[fanins[0].portname]
-                    assert len(fanins)<=1, 'wrong cell: '+mcell
+                    assert len(fanins)<=1, 'wrong cell: '+ mcell
                 for nd in sub_nodes:
                     if nd[0] == fo_portname:
                         node = (fo.argname,nd[1])
