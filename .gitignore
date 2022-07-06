@@ -38,3 +38,7 @@ build/
 *.docx
 *.tmp
 *.iml
+
+# added
+test/
+**/__pycache__/
