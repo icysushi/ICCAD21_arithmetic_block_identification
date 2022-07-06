@@ -126,13 +126,6 @@ def test(options):
     in_nlayers = options.in_nlayers if isinstance(options.in_nlayers,int) else options.in_nlayers[0]
     out_nlayers = options.out_nlayers if isinstance(options.out_nlayers,int) else options.out_nlayers[0]
 
-    if options.label == 'in':
-        label_name = 'label_i'
-    elif options.label == 'out':
-        label_name = 'label_o'
-    else:
-        print('Error: wrong label!')
-        exit()
     print("----------------Loading data----------------")
 
 
@@ -145,7 +138,8 @@ def test(options):
     out_sampler = Sampler([None] * out_nlayers , include_dst_in_src=False)
 
     test_nids = th.tensor(range(test_g.num_nodes()))
-    test_nids = test_nids[test_g.ndata[label_name].squeeze(-1) != -1]
+    # test_nids = test_nids[test_g.ndata[label_name].squeeze(-1) != -1]
+
     # create dataloader for training/validate dataset
     graph_function = get_reverse_graph
 
@@ -165,10 +159,8 @@ def test(options):
 
     beta = options.beta
     # set loss function
-    Loss = nn.CrossEntropyLoss()
 
     print("----------------Start testing---------------")
-    total_num, total_loss, correct, fn, fp, tn, tp = 0, 0.0, 0, 0, 0, 0, 0
     predict_labels = None
     runtime = 0
 
@@ -184,8 +176,6 @@ def test(options):
             out_input_features = out_blocks[0].srcdata["ntype"]
             #print(in_input_features.shape,model.GNN1)
             # the central nodes are the output of the final block
-            output_labels = in_blocks[-1].dstdata[label_name].squeeze(1)
-            total_num += len(output_labels)
             # predict the labels of central nodes
             label_hat = model(in_blocks, in_input_features, out_blocks, out_input_features)
             pos_prob = nn.functional.softmax(label_hat, 1)[:, 1]
@@ -196,37 +186,8 @@ def test(options):
 
             end = time()
             runtime += end - start
-            # calculate the loss
-            val_loss = Loss(label_hat, output_labels).to(device)
-            total_loss += val_loss.item() * len(output_labels)
-            # count the correctly predicted samples
-            correct += (
-                    predict_labels == output_labels
-            ).sum().item()
-
-            # count fake negatives (fn), true negatives (tp), true negatives (tn), true postives (tp)
-            fn += ((predict_labels == 0) & (output_labels != 0)).sum().item()
-            tp += ((predict_labels != 0) & (output_labels != 0)).sum().item()
-            tn += ((predict_labels == 0) & (output_labels == 0)).sum().item()
-            fp += ((predict_labels != 0) & (output_labels == 0)).sum().item()
 
             os.makedirs(predict_path, exist_ok=True)
-
-    loss = total_loss / total_num
-    acc = correct / total_num
-
-    # calculate recall, precision and F1-score
-    recall = 0
-    precision = 0
-    if tp != 0:
-        recall = tp / (tp + fn)
-        precision = tp / (tp + fp)
-    F1_score = 0
-    if precision != 0 or recall != 0:
-        F1_score = 2 * recall * precision / (recall + precision)
-
-    print("\ttp:", tp, " fp:", fp, " fn:", fn, " tn:", tn, " precision:", round(precision, 3))
-    print("\tloss:{:.3f}, acc:{:.3f}, recall:{:.3f}, F1 score:{:.3f}".format(loss, acc, recall, F1_score))
 
     print("----------------Saving the prediction results---------------")
     with open(os.path.join(predict_path, 'predicted_nids.pkl'), 'wb') as f:
