@@ -1,0 +1,6 @@
+cell (CGLPPRX2_LVT)
+pin (CLK)
+pin (EN)
+pin (SE)
+pin (GCLK) 
+function "(((SE+EN)&(!CLK))&CLK)"

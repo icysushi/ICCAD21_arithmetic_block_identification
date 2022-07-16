@@ -84,8 +84,8 @@ def my_parse_single_file(fname):
     print('count2',count2)
 
     print('\tgenerate type-relative initial features')"""
-    # collect the node type information
-    ntype = th.zeros((len(node2id), len(ctype2id)), dtype=th.float)
+    # collect the node type information    len(ctype2id)
+    ntype = th.zeros((len(node2id), 16), dtype=th.float)
     for n in nodes:
         nid = node2id[n[0]]
         ntype[nid][ctype2id[n[1]["type"]]] = 1

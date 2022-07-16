@@ -144,6 +144,7 @@ def test(options):
     graph_function = get_reverse_graph
 
     print(test_g.ndata['ntype'].shape,model.GCN1.in_dim)
+    print(test_g.ndata['ntype'])
 
     testdataloader = MyNodeDataLoader(
         True,

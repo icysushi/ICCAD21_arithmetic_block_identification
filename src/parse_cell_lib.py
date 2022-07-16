@@ -233,39 +233,14 @@ def parse_cell_lib(file):
 
         if cell_name.startswith('ANTE') or cell_name.startswith('BHD') or cell_name.startswith('TIE') or cell_name.startswith('DCAP') or cell_name.startswith('GCK'):
             continue
-
-        split_idx = 0
-        if re.search('(D|X)\d+\w*(D|X)\d+\w*COT', cell_name) is not None:
-            split_idx = re.search('(D|X)\d+\w*(D|X)\d+\w*COT', cell_name).start()+1
-            idx = re.search('((D|X)\d+\w*COT)', cell_name[split_idx:])
-        # if cell_name.startswith('ND'):
-        #     idx = re.search('((EEQM|OPT|CCB|SK)\w*|)((D|X)\d+\w*COT)', cell_name[2:])
-        # elif cell_name.startswith('IND'):
-        #     idx = re.search('((EEQM|OPT|CCB|SK)\w*|)((D|X)\d+\w*COT)', cell_name[3:])
-        # elif cell_name.startswith('AOI21ND'):
-        #     idx = re.search('((EEQM|OPT|CCB|SK)\w*|)((D|X)\d+\w*COT)', cell_name[7:])
-        else:
-            idx = re.search('((D|X)\d+\w*COT)', cell_name)
-        if idx is None:
-            print(cell_name)
-            if 'SRAM' in cell_name:
-                continue
-            assert False
-
-        # if cell_name.startswith('MUX'):
-        #     idx = re.search('MUX\d+', cell_name)
-        #     cell_name = cell_name[:idx.end()]
-        # elif cell_name.startswith('MXI'):
-        #     idx = re.search('MXI\d+', cell_name)
-        #     cell_name = cell_name[:idx.end()]
-        # else:
-        cell_name = cell_name[:idx.start() + split_idx]
+        
         cell_info_map[cell_name] = CellInfo()
         pin_text = cell_text[cell_text.find('pin'):]
         pins = pin_text.split('pin')[1:]
         fanouts , fanins = [],[]
         for pin in pins:
             if 'function' in pin:
+                #print(pin)
                 pinname, function = pin.split('\n')[:-1]
                 pinname = pinname[pinname.find('(')+1:pinname.find(")")]
                 fanouts.append(pinname)
